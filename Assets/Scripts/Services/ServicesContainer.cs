@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
 
-namespace Scripts.Services
+namespace BlindCrocodile.Services
 {
     public class ServicesContainer
     {
-        public static ServicesContainer Instance
-        {
-            get
-            {
-                _instance ??= new ServicesContainer();
-
-                return _instance;
-            }
-        }
+        public static ServicesContainer Instance => _instance ??= new ServicesContainer();
 
         private static ServicesContainer _instance;
 
@@ -21,10 +13,8 @@ namespace Scripts.Services
 
         private ServicesContainer() { }
 
-        public static void AsSingle<TImplementation>(IService service)
-        {
+        public static void SingleAs<TImplementation>(IService service) =>
             _services.Add(typeof(TImplementation), service);
-        }
 
         public static IService Single<TImplementation>() =>
             _services[typeof(TImplementation)];

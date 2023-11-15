@@ -1,4 +1,4 @@
-﻿namespace Scripts.Services
+﻿namespace BlindCrocodile.Services
 {
     public interface IService { }
 }

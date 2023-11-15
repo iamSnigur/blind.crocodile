@@ -1,15 +1,14 @@
-using Scipts.Core;
 using System;
 using System.Collections.Generic;
 
-namespace Scripts.Core
+namespace BlindCrocodile.Core
 {
-    public class StateMachine : IStateMachine
+    public class GameStateMachine : IStateMachine
     {
         private readonly Dictionary<Type, IState> _states;
         private IState _currentState;
 
-        public StateMachine()
+        public GameStateMachine()
         {
             _states = new Dictionary<Type, IState>()
             {

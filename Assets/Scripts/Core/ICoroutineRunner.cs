@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Scripts.Core
+namespace BlindCrocodile.Core
 {
     public interface ICoroutineRunner
     {

@@ -1,13 +1,12 @@
-namespace Scripts.Core
+namespace BlindCrocodile.Core
 {
     public class Game
     {
-        private readonly IStateMachine _stateMachine;
+        public IStateMachine StateMachine { get ; private set; }
 
-        public Game(IStateMachine stateMachine)
+        public Game()
         {
-            _stateMachine = stateMachine;
-            _stateMachine.Enter<BootstrapState>();
+            StateMachine = new GameStateMachine();
         }
     }
 }

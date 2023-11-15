@@ -1,4 +1,4 @@
-namespace Scripts.Core
+namespace BlindCrocodile.Core
 {
     public interface IState
     {

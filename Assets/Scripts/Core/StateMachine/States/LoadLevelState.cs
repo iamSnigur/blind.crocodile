@@ -1,6 +1,4 @@
-using Scripts.Core;
-
-namespace Scipts.Core
+namespace BlindCrocodile.Core
 {
     public class LoadLevelState : IState
     {

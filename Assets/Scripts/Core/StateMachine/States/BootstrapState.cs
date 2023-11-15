@@ -1,7 +1,7 @@
-using System;
-using UnityEngine;
+using BlindCrocodile.Services;
+using BlindCrocodile.Services.Relay;
 
-namespace Scripts.Core
+namespace BlindCrocodile.Core
 {
     public class BootstrapState : IState
     {
@@ -14,12 +14,6 @@ namespace Scripts.Core
 
         public void Enter()
         {
-            // initialize frame rate
-            //QualitySettings.vSyncCount = 0;
-            //Application.targetFrameRate = 165;
-            // warm up shaders
-            //Shader.WarmupAllShaders();
-            // initialize services
             InitializeServices();
         }
 
@@ -30,7 +24,7 @@ namespace Scripts.Core
 
         private void InitializeServices()
         {
-
+            ServicesContainer.SingleAs<IRelayService>(new RelayService(Unity.Services.Relay.RelayService.Instance));
         }
     }
 }
