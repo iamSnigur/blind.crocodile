@@ -1,12 +1,10 @@
-namespace BlindCrocodile.Core
+﻿namespace BlindCrocodile.Core
 {
-    public class LoadLevelState : IState
+    public class GameLoopState : IState
     {
-        private readonly IStateMachine _stateMachine;
-
-        public LoadLevelState(IStateMachine stateMachine)
+        public GameLoopState(IStateMachine stateMachine)
         {
-            _stateMachine = stateMachine;
+
         }
 
         public void Enter()

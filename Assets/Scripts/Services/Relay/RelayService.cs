@@ -9,18 +9,16 @@ namespace BlindCrocodile.Services.Relay
     {
         private readonly IUnityRelayService _unityRelayService;
 
-        public RelayService(IUnityRelayService unityRelayService)
-        {
+        public RelayService(IUnityRelayService unityRelayService) =>
             _unityRelayService = unityRelayService;
-        }
 
-        public async Task<Allocation> CreateAllocationAsync(int maxConnections, string region = null) => 
+        public async Task<Allocation> CreateAllocationAsync(int maxConnections, string region = null) =>
             await _unityRelayService.CreateAllocationAsync(maxConnections, region);
 
         public async Task<JoinAllocation> JoinAllocationAsync(string joinCode) =>
             await _unityRelayService.JoinAllocationAsync(joinCode);
 
-        public async Task<string> GetJoinCodeAsync(Guid allocationId) => 
+        public async Task<string> GetJoinCodeAsync(Guid allocationId) =>
             await _unityRelayService.GetJoinCodeAsync(allocationId);
     }
 }
