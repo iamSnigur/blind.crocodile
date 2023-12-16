@@ -1,28 +1,44 @@
-﻿using BlindCrocodile.Services.Multiplayer;
+﻿using BlindCrocodile.Core;
+using BlindCrocodile.Lobbies;
+using BlindCrocodile.Services.Network;
 using BlindCrocodile.Services.StaticData;
+using BlindCrocodile.UI;
 using UnityEngine;
 
 namespace BlindCrocodile.Services.LobbyFactory
 {
     public class LobbyFactory : ILobbyFactory
     {
-        private readonly IMultiplayerService _multiplayerService;
+        private readonly INetworkService _networkService;
         private readonly IStaticDataService _staticDataService;
+        private readonly IStateMachine _stateMachine;
+        private readonly ILobbyService _lobbyService;
 
-        public LobbyFactory(IMultiplayerService multiplayerService, IStaticDataService staticDataService)
+        public LobbyFactory(INetworkService networkService, IStaticDataService staticDataService, IStateMachine stateMachine, ILobbyService lobbyService)
         {
-            _multiplayerService = multiplayerService;
+            _networkService = networkService;
             _staticDataService = staticDataService;
+            _stateMachine = stateMachine;
+            _lobbyService = lobbyService;
         }
 
-        public GameObject CreateHub()
+        public GameObject CreateHud()
         {
-            GameObject hub = Object.Instantiate(_staticDataService.UIStaticData.LobbyHubPrefab);
-            hub
-                .GetComponent<GameHubController>()
-                .Construct(_multiplayerService);
+            GameObject hud = Object.Instantiate(_staticDataService.UIStaticData.LobbyHudPrefab);
+            hud
+                .GetComponent<LobbyHudController>()
+                .Construct(_networkService, _stateMachine, _lobbyService, this);
 
-            return hub;
+            return hud;
+        }
+
+        public PlayerHudItem CreatePlayerItem(LocalPlayer localPlayer, Transform parent)
+        {
+            PlayerHudItem playerItem = 
+                Object.Instantiate(_staticDataService.UIStaticData.PlayerHudItemPrefab, parent);
+            playerItem.Construct(localPlayer);
+
+            return playerItem;
         }
     }
 }

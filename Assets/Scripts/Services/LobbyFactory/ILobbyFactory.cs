@@ -1,9 +1,13 @@
-﻿using UnityEngine;
+﻿using BlindCrocodile.Core.Services;
+using BlindCrocodile.Lobbies;
+using BlindCrocodile.UI;
+using UnityEngine;
 
 namespace BlindCrocodile.Services.LobbyFactory
 {
     public interface ILobbyFactory : IService
     {
-        GameObject CreateHub();
+        GameObject CreateHud();
+        PlayerHudItem CreatePlayerItem(LocalPlayer localPlayer, Transform parent);
     }
 }

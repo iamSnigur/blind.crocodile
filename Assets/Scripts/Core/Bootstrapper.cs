@@ -1,4 +1,4 @@
-using BlindCrocodile.Services;
+using BlindCrocodile.Core.Services;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -17,13 +17,13 @@ namespace BlindCrocodile.Core
             await InitializeUnityServices();
 
             var sceneLoader = new SceneLoader(this);
-            _game = new Game(sceneLoader, _loaderWidget, ServicesContainer.Instance);
+            _game = new Game(sceneLoader, _loaderWidget, ServicesContainer.Instance, this);
             _game.StateMachine.Enter<BootstrapState>();
 
             DontDestroyOnLoad(this);
         }
 
-        private static async Task InitializeUnityServices()
+        private async Task InitializeUnityServices()
         {
             await UnityServices.InitializeAsync();
             await AuthenticationService.Instance.SignInAnonymouslyAsync();

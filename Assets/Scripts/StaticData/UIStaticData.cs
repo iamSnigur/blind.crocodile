@@ -1,10 +1,13 @@
-﻿using UnityEngine;
+﻿using BlindCrocodile.UI;
+using UnityEngine;
 
 namespace BlindCrocodile.StaticData
 {
-    [CreateAssetMenu(fileName = "UIStaticData", menuName = "BlindCrocodile/StaticData/UIStaticData", order = 0)]
+    [CreateAssetMenu(fileName = "UIStaticData", menuName = "BlindCrocodile/StaticData/UIStaticData")]
     public class UIStaticData : ScriptableObject
     {
-        public GameObject LobbyHubPrefab;
+        public GameObject MenuHudPrefab;
+        public GameObject LobbyHudPrefab;
+        public PlayerHudItem PlayerHudItemPrefab;
     }
 }

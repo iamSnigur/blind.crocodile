@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bea9cb781e0cbda439ab81171a6f354f, type: 3}
   m_Name: UIStaticData
   m_EditorClassIdentifier: 
-  LobbyHubPrefab: {fileID: 2248796952132907846, guid: 19f78baa58608e14fbd1a6f69b962cf1, type: 3}
+  MenuHudPrefab: {fileID: 2248796952132907846, guid: 19f78baa58608e14fbd1a6f69b962cf1, type: 3}
+  LobbyHudPrefab: {fileID: 7835520346604022201, guid: f31af88a9e4f8d641a437d053072bd20, type: 3}
+  PlayerHudItemPrefab: {fileID: 6030704938651182623, guid: 872fcd69024db804788f74abb41e1226, type: 3}

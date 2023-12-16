@@ -1,8 +1,11 @@
-using BlindCrocodile.Services;
 using System.Collections.Generic;
 using System;
 using BlindCrocodile.Services.LobbyFactory;
 using BlindCrocodile.StateMachine;
+using BlindCrocodile.Core.Services;
+using BlindCrocodile.Services.MenyFactory;
+using BlindCrocodile.Lobbies;
+using BlindCrocodile.Services.Network;
 
 namespace BlindCrocodile.Core
 {
@@ -11,24 +14,23 @@ namespace BlindCrocodile.Core
         private readonly Dictionary<Type, IExitableState> _states;
         private IExitableState _activeState;
 
-        // BootstrapState => LobbyMenuState => WaitingLobbyState => GameLoopState
-
         // BootstrapState - initialize game
         // LoadMenuState
         // MenuState - join or host the game
-        // LoadLobbyState
+        // LoadLobbyState - separete for host and clients (HostGameState/JoinGameState)
         // WaitingLobbyState - wait all the players to be ready. Start countdown and begin the game 
         // GameLoopState - handle game logic
         // RoundEndState - showroom for winners
 
-        public GameStateMachine(SceneLoader sceneLoader, LoaderWidget loaderWidget, ServicesContainer services)
+        public GameStateMachine(SceneLoader sceneLoader, LoaderWidget loaderWidget, ServicesContainer services, ICoroutineRunner coroutineRunner)
         {
             _states = new Dictionary<Type, IExitableState>()
             {
-                [typeof(BootstrapState)] = new BootstrapState(this, services),
-                [typeof(LoadMenuState)] = new LoadMenuState(this, services.Single<ILobbyFactory>(), sceneLoader, loaderWidget),
+                [typeof(BootstrapState)] = new BootstrapState(this, services, coroutineRunner),
+                [typeof(LoadMenuState)] = new LoadMenuState(this, services.Single<IMenuFactory>(), sceneLoader, loaderWidget),
                 [typeof(MenuState)] = new MenuState(this),
-                [typeof(LoadLobbyState)] = new LoadLobbyState(this, sceneLoader, loaderWidget),
+                [typeof(HostGameState)] = new HostGameState(this, services.Single<ILobbyFactory>(), services.Single<ILobbyService>(), services.Single<INetworkService>(), sceneLoader, loaderWidget),
+                [typeof(JoinGameState)] = new JoinGameState(this, services.Single<ILobbyFactory>(), services.Single<ILobbyService>(), services.Single<INetworkService>(), sceneLoader, loaderWidget),
                 [typeof(WaitingLobbyState)] = new WaitingLobbyState(this, sceneLoader),
                 [typeof(GameLoopState)] = new GameLoopState(this),
             };

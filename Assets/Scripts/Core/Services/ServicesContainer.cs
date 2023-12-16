@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace BlindCrocodile.Services
+namespace BlindCrocodile.Core.Services
 {
     public class ServicesContainer
     {

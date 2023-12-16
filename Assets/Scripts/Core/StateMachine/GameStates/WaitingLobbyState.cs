@@ -20,7 +20,7 @@
 
         public void Exit()
         {
-            throw new System.NotImplementedException();
+
         }
     }
 }

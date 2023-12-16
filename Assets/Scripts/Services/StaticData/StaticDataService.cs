@@ -9,7 +9,7 @@ namespace BlindCrocodile.Services.StaticData
 
         public UIStaticData UIStaticData { get; private set; }
 
-        public void LoadUI() => 
+        public void LoadUI() =>
             UIStaticData = Resources.Load<UIStaticData>(UI_PATH);
     }
 }
