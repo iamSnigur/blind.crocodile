@@ -1,17 +1,19 @@
-using BlindCrocodile.Services.MenyFactory;
+using BlindCrocodile.Core;
+using BlindCrocodile.Core.StateMachine;
+using BlindCrocodile.Services.MenuFactory;
 
-namespace BlindCrocodile.Core
+namespace BlindCrocodile.GameStates
 {
-    public class LoadMenuState : IState
+    public class LoadMenuState : IGameState, IState
     {
         private const string MENU_SCENE = "LobbyScene";
 
-        private readonly IStateMachine _stateMachine;
+        private readonly IStateMachine<IGameState> _stateMachine;
         private readonly IMenuFactory _menuFactory;
         private readonly SceneLoader _sceneLoader;
         private readonly LoaderWidget _loaderWidget;
 
-        public LoadMenuState(IStateMachine stateMachine, IMenuFactory lobbyFactory, SceneLoader sceneLoader, LoaderWidget loaderWidget)
+        public LoadMenuState(IStateMachine<IGameState> stateMachine, IMenuFactory lobbyFactory, SceneLoader sceneLoader, LoaderWidget loaderWidget)
         {
             _stateMachine = stateMachine;
             _menuFactory = lobbyFactory;

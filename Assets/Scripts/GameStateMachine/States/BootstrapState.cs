@@ -4,19 +4,21 @@ using BlindCrocodile.Services.LobbyFactory;
 using BlindCrocodile.Services.Network;
 using BlindCrocodile.Services.StaticData;
 using BlindCrocodile.Services.Relay;
+using BlindCrocodile.Services.MenuFactory;
 using BlindCrocodile.Core.Services;
-using BlindCrocodile.Services.MenyFactory;
+using BlindCrocodile.Core;
+using BlindCrocodile.Core.StateMachine;
 using BlindCrocodile.Lobbies;
 
-namespace BlindCrocodile.Core
+namespace BlindCrocodile.GameStates
 {
-    public class BootstrapState : IState
+    public class BootstrapState : IGameState, IState
     {
-        private readonly ServicesContainer _services;
-        private readonly IStateMachine _stateMachine;
+        private readonly ServiceLocator _services;
+        private readonly IStateMachine<IGameState> _stateMachine;
         private readonly ICoroutineRunner _coroutineRunner;
 
-        public BootstrapState(IStateMachine stateMachine, ServicesContainer services, ICoroutineRunner coroutineRunner)
+        public BootstrapState(IStateMachine<IGameState> stateMachine, ServiceLocator services, ICoroutineRunner coroutineRunner)
         {
             _stateMachine = stateMachine;
             _services = services;
@@ -56,7 +58,7 @@ namespace BlindCrocodile.Core
             _services.BindSingle<IRelayService>(new RelayService(Unity.Services.Relay.RelayService.Instance));
 
         private void BindLobbyService() =>
-            _services.BindSingle<ILobbyService>(new LobbyService(Unity.Services.Lobbies.Lobbies.Instance, _coroutineRunner));
+            _services.BindSingle<ILobbyService>(new LobbyService(Unity.Services.Lobbies.Lobbies.Instance, _coroutineRunner, _stateMachine));
 
         private void BindNetworkService()
         {

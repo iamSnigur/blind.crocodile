@@ -8,6 +8,7 @@ using Unity.Networking.Transport.Relay;
 
 namespace BlindCrocodile.Services.Network
 {
+    // Create network state machine to controll network states of player
     public class NetworkService : INetworkService
     {
         private const string DTLS_CONNECTION = "dtls";
@@ -42,6 +43,10 @@ namespace BlindCrocodile.Services.Network
         public async Task JoinServerAsync()
         {
             string relayCode = _lobbyService.LocalLobby.RelayCode;
+
+            if (string.IsNullOrEmpty(relayCode))
+                return;
+
             JoinAllocation joinAllocation = await _relayService.JoinAllocationAsync(relayCode);
 
             await _lobbyService.UpdateRemotePlayerDataAsync(joinAllocation.AllocationId.ToString(), relayCode);

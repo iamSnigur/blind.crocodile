@@ -1,4 +1,4 @@
-﻿namespace BlindCrocodile.Core
+﻿namespace BlindCrocodile.Core.StateMachine
 {
     public interface IExitableState
     {

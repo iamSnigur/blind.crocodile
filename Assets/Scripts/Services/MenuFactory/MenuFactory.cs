@@ -4,7 +4,7 @@ using BlindCrocodile.Services.StaticData;
 using BlindCrocodile.UI;
 using UnityEngine;
 
-namespace BlindCrocodile.Services.MenyFactory
+namespace BlindCrocodile.Services.MenuFactory
 {
     public class MenuFactory : IMenuFactory
     {

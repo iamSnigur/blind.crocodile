@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System;
 using BlindCrocodile.Services.LobbyFactory;
-using BlindCrocodile.StateMachine;
-using BlindCrocodile.Core.Services;
-using BlindCrocodile.Services.MenyFactory;
-using BlindCrocodile.Lobbies;
+using BlindCrocodile.Services.MenuFactory;
 using BlindCrocodile.Services.Network;
+using BlindCrocodile.Core.Services;
+using BlindCrocodile.Core;
+using BlindCrocodile.Core.StateMachine;
+using BlindCrocodile.Lobbies;
 
-namespace BlindCrocodile.Core
+namespace BlindCrocodile.GameStates
 {
-    public class GameStateMachine : IStateMachine
+    public class GameStateMachine : IStateMachine<IGameState>
     {
         private readonly Dictionary<Type, IExitableState> _states;
         private IExitableState _activeState;
@@ -22,7 +23,7 @@ namespace BlindCrocodile.Core
         // GameLoopState - handle game logic
         // RoundEndState - showroom for winners
 
-        public GameStateMachine(SceneLoader sceneLoader, LoaderWidget loaderWidget, ServicesContainer services, ICoroutineRunner coroutineRunner)
+        public GameStateMachine(SceneLoader sceneLoader, LoaderWidget loaderWidget, ServiceLocator services, ICoroutineRunner coroutineRunner)
         {
             _states = new Dictionary<Type, IExitableState>()
             {
@@ -36,13 +37,13 @@ namespace BlindCrocodile.Core
             };
         }
 
-        public void Enter<TState>() where TState : class, IState
+        public void Enter<TState>() where TState : class, IGameState, IState
         {
             TState state = ChangeState<TState>();
             state.Enter();
         }
 
-        public void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadedState<TPayload>
+        public void Enter<TState, TPayload>(TPayload payload) where TState : class, IGameState, IPayloadedState<TPayload>
         {
             TState state = ChangeState<TState>();
             state.Enter(payload);

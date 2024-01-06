@@ -17,15 +17,17 @@ namespace BlindCrocodile.Lobbies
 
         private readonly IUnityLobbyService _unityLobbyService;
         private readonly ICoroutineRunner _coroutineRunner;
+        private readonly IStateMachine _gameStateMachine;
 
         private Lobby _remoteLobby;
         private ILobbyEvents _lobbyEvents;
         private Coroutine _hearbeatCoroutine;
 
-        public LobbyService(IUnityLobbyService unityLobbyService, ICoroutineRunner coroutineRunner)
+        public LobbyService(IUnityLobbyService unityLobbyService, ICoroutineRunner coroutineRunner, IStateMachine gameStateMachine)
         {
             _unityLobbyService = unityLobbyService;
             _coroutineRunner = coroutineRunner;
+            _gameStateMachine = gameStateMachine;
 
             LocalPlayer = new LocalPlayer() { Id = AuthenticationService.Instance.PlayerId }; // refactor
             LocalLobby = new LocalLobby();
@@ -41,10 +43,19 @@ namespace BlindCrocodile.Lobbies
                 Player = new(id: LocalPlayer.Id, data: LocalPlayer.GetDataForRemoteLobby()),
             };
 
-            _remoteLobby = await _unityLobbyService.CreateLobbyAsync(lobbyName, maxConnections, options);
-            LocalLobby.SetRemoteData(_remoteLobby);
-            _hearbeatCoroutine = _coroutineRunner.StartCoroutine(HeartbeatCoroutine(10f));
-            SubscribeToLobbyEvents();
+            try
+            {
+                _remoteLobby = await _unityLobbyService.CreateLobbyAsync(lobbyName, maxConnections, options);
+
+                LocalLobby.SetRemoteData(_remoteLobby);
+                _hearbeatCoroutine = _coroutineRunner.StartCoroutine(HeartbeatCoroutine(10f));
+                SubscribeToLobbyEvents();
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.LogError(e);
+                _gameStateMachine.Enter<LoadMenuState>();
+            }
         }
 
         public async Task JoinLobbyByCodeAsync(string lobbyCode)
@@ -54,9 +65,18 @@ namespace BlindCrocodile.Lobbies
                 Player = new(id: LocalPlayer.Id, data: LocalPlayer.GetDataForRemoteLobby())
             };
 
-            _remoteLobby = await _unityLobbyService.JoinLobbyByCodeAsync(lobbyCode, options);
-            LocalLobby.SetRemoteData(_remoteLobby);
-            SubscribeToLobbyEvents();
+            try
+            {
+                _remoteLobby = await _unityLobbyService.JoinLobbyByCodeAsync(lobbyCode, options);
+
+                LocalLobby.SetRemoteData(_remoteLobby);
+                SubscribeToLobbyEvents();
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.LogError(e);
+                _gameStateMachine.Enter<LoadMenuState>();
+            }
         }
 
         public void DisconnectFromLobby()
@@ -129,10 +149,11 @@ namespace BlindCrocodile.Lobbies
 
         private void OnRemoteLobbyChanged(ILobbyChanges changes)
         {
-            if (changes.LobbyDeleted) // handle as client when host deleted lobby
+            if (changes.LobbyDeleted)
             {
                 ResetLobby();
                 DisconnectFromLobby();
+                _gameStateMachine.Enter<LoadMenuState>();
 
                 return;
             }

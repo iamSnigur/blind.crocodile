@@ -188,13 +188,11 @@ namespace BlindCrocodile.Lobbies
             NotifyListeners();
         }
 
-        public Dictionary<string, DataObject> GetDataForRemoteLobby()
-        {
-            return new()
+        public Dictionary<string, DataObject> GetDataForRemoteLobby() =>
+            new()
             {
                 [RELAY_KEY] = new DataObject(DataObject.VisibilityOptions.Member, RelayCode),
             };
-        }
 
         public void AddPlayer(LocalPlayer localPlayer)
         {

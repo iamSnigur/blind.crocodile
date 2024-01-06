@@ -1,8 +1,9 @@
 using BlindCrocodile.Core.Services;
-using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
+using System.Threading.Tasks;
+using BlindCrocodile.GameStates;
 
 namespace BlindCrocodile.Core
 {
@@ -17,7 +18,7 @@ namespace BlindCrocodile.Core
             await InitializeUnityServices();
 
             var sceneLoader = new SceneLoader(this);
-            _game = new Game(sceneLoader, _loaderWidget, ServicesContainer.Instance, this);
+            _game = new Game(sceneLoader, _loaderWidget, ServiceLocator.Instance, this);
             _game.StateMachine.Enter<BootstrapState>();
 
             DontDestroyOnLoad(this);

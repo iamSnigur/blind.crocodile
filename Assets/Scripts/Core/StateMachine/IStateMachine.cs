@@ -1,8 +1,8 @@
-namespace BlindCrocodile.Core
+namespace BlindCrocodile.Core.StateMachine
 {
-    public interface IStateMachine
+    public interface IStateMachine<TBaseState>
     {
-        void Enter<TState>() where TState : class, IState;
-        void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadedState<TPayload>;
+        void Enter<TState>() where TState : class, TBaseState, IState;
+        void Enter<TState, TPayload>(TPayload payload) where TState : class, TBaseState, IPayloadedState<TPayload>;
     }
 }

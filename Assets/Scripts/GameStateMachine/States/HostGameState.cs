@@ -1,24 +1,26 @@
 ﻿using BlindCrocodile.Core;
-using BlindCrocodile.Lobbies;
+using BlindCrocodile.Core.StateMachine;
 using BlindCrocodile.Services.LobbyFactory;
 using BlindCrocodile.Services.Network;
+using BlindCrocodile.Lobbies;
 using System.Threading.Tasks;
-using UnityEngine;
 
-namespace BlindCrocodile.StateMachine
+namespace BlindCrocodile.GameStates
 {
-    public class JoinGameState : IPayloadedState<string>
+    public class HostGameState : IGameState, IState
     {
         private const string GAME_SCENE = "GameScene";
+        private const string LOBBY_NAME = "GameLobby";
+        private const int MAX_CONNECTIONS = 5;
 
-        private readonly IStateMachine _gameStateMachine;
+        private readonly IStateMachine<IGameState> _gameStateMachine;
+        private readonly ILobbyFactory _lobbyFactory;
         private readonly ILobbyService _lobbyService;
         private readonly INetworkService _networkService;
-        private readonly ILobbyFactory _lobbyFactory;
         private readonly SceneLoader _sceneLoader;
         private readonly LoaderWidget _loaderWidget;
 
-        public JoinGameState(IStateMachine stateMachine, ILobbyFactory lobbyFactory, ILobbyService lobbyService, INetworkService networkService, SceneLoader sceneLoader, LoaderWidget loaderWidget)
+        public HostGameState(IStateMachine<IGameState> stateMachine, ILobbyFactory lobbyFactory, ILobbyService lobbyService, INetworkService networkService, SceneLoader sceneLoader, LoaderWidget loaderWidget)
         {
             _gameStateMachine = stateMachine;
             _lobbyFactory = lobbyFactory;
@@ -28,27 +30,27 @@ namespace BlindCrocodile.StateMachine
             _networkService = networkService;
         }
 
-        public void Enter(string lobbyCode)
+        public void Enter()
         {
             _loaderWidget.Show();
-            _sceneLoader.Load(GAME_SCENE, delegate { OnLoaded(lobbyCode); });
+            _sceneLoader.Load(GAME_SCENE, OnLoaded);
         }
 
         public void Exit() =>
             _loaderWidget.Hide();
 
-        private async void OnLoaded(string lobbyCode)
+        private async void OnLoaded()
         {
-            await InitLobbyHudAsync(lobbyCode);
+            await InitLobbyHudAsync();
             _gameStateMachine.Enter<WaitingLobbyState>();
         }
 
-        private async Task InitLobbyHudAsync(string lobbyCode)
+        private async Task InitLobbyHudAsync()
         {
             _lobbyFactory.CreateHud();
 
-            await _lobbyService.JoinLobbyByCodeAsync(lobbyCode);
-            await _networkService.JoinServerAsync();
+            await _lobbyService.CreateLobbyAsync(LOBBY_NAME, MAX_CONNECTIONS);
+            await _networkService.StartHostAsync(MAX_CONNECTIONS);
         }
     }
 }

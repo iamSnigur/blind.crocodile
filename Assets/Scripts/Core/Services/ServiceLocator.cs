@@ -3,14 +3,14 @@ using System;
 
 namespace BlindCrocodile.Core.Services
 {
-    public class ServicesContainer
+    public class ServiceLocator
     {
-        public static ServicesContainer Instance => _instance ??= new ServicesContainer();
+        public static ServiceLocator Instance => _instance ??= new ServiceLocator();
 
-        private static ServicesContainer _instance;
+        private static ServiceLocator _instance;
         private static Dictionary<Type, IService> _services = new();
 
-        private ServicesContainer() { }
+        private ServiceLocator() { }
 
         public void BindSingle<TImplementation>(IService service) =>
             _services.Add(typeof(TImplementation), service);
