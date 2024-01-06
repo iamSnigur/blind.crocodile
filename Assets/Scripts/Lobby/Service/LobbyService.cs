@@ -7,6 +7,8 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using IUnityLobbyService = Unity.Services.Lobbies.ILobbyService;
 using Unity.Services.Authentication;
+using BlindCrocodile.Core.StateMachine;
+using BlindCrocodile.GameStates;
 
 namespace BlindCrocodile.Lobbies
 {
@@ -17,13 +19,13 @@ namespace BlindCrocodile.Lobbies
 
         private readonly IUnityLobbyService _unityLobbyService;
         private readonly ICoroutineRunner _coroutineRunner;
-        private readonly IStateMachine _gameStateMachine;
+        private readonly IStateMachine<IGameState> _gameStateMachine;
 
         private Lobby _remoteLobby;
         private ILobbyEvents _lobbyEvents;
         private Coroutine _hearbeatCoroutine;
 
-        public LobbyService(IUnityLobbyService unityLobbyService, ICoroutineRunner coroutineRunner, IStateMachine gameStateMachine)
+        public LobbyService(IUnityLobbyService unityLobbyService, ICoroutineRunner coroutineRunner, IStateMachine<IGameState> gameStateMachine)
         {
             _unityLobbyService = unityLobbyService;
             _coroutineRunner = coroutineRunner;

@@ -1,9 +1,9 @@
-using BlindCrocodile.StateMachine;
-using BlindCrocodile.Core;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 using BlindCrocodile.Lobbies;
+using BlindCrocodile.GameStates;
+using BlindCrocodile.Core.StateMachine;
 
 namespace BlindCrocodile.UI
 {
@@ -15,10 +15,10 @@ namespace BlindCrocodile.UI
         [SerializeField] private Button _hostButton;
         [SerializeField] private Button _exitButton;
 
-        private IStateMachine _gameStateMachine;
+        private IStateMachine<IGameState> _gameStateMachine;
         private ILobbyService _lobbyService;
 
-        public void Construct(IStateMachine gameStateMachine, ILobbyService lobbyService)
+        public void Construct(IStateMachine<IGameState> gameStateMachine, ILobbyService lobbyService)
         {
             _gameStateMachine = gameStateMachine;
             _lobbyService = lobbyService;

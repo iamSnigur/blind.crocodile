@@ -1,4 +1,6 @@
 ﻿using BlindCrocodile.Core;
+using BlindCrocodile.Core.StateMachine;
+using BlindCrocodile.GameStates;
 using BlindCrocodile.Lobbies;
 using BlindCrocodile.Services.LobbyFactory;
 using BlindCrocodile.Services.Network;
@@ -19,11 +21,11 @@ namespace BlindCrocodile.UI
 
         private readonly Dictionary<string, PlayerHudItem> _playerHudItems = new();
         private INetworkService _networkService;
-        private IStateMachine _gameStateMachine;
+        private IStateMachine<IGameState> _gameStateMachine;
         private ILobbyService _lobbyService;
         private ILobbyFactory _lobbyFactory;
 
-        public void Construct(INetworkService networkService, IStateMachine gameStateMachine, ILobbyService lobbyService, ILobbyFactory lobbyFactory)
+        public void Construct(INetworkService networkService, IStateMachine<IGameState> gameStateMachine, ILobbyService lobbyService, ILobbyFactory lobbyFactory)
         {
             _networkService = networkService;
             _gameStateMachine = gameStateMachine;
