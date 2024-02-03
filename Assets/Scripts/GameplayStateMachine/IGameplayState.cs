@@ -1,4 +1,4 @@
-﻿namespace Scripts.GameplayStateMachine
+﻿namespace BlindCrocodile.GameplayStates
 {
     public interface IGameplayState { }
 }

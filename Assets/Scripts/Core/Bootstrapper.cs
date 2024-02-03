@@ -4,6 +4,7 @@ using Unity.Services.Core;
 using UnityEngine;
 using System.Threading.Tasks;
 using BlindCrocodile.GameStates;
+using Unity.Netcode;
 
 namespace BlindCrocodile.Core
 {
@@ -11,15 +12,15 @@ namespace BlindCrocodile.Core
     {
         [SerializeField] private LoaderWidget _loaderWidget;
 
-        private Game _game;
+        private static Game _game;
 
         private async void Awake()
         {
             await InitializeUnityServices();
 
             var sceneLoader = new SceneLoader(this);
-            _game = new Game(sceneLoader, _loaderWidget, ServiceLocator.Instance, this);
-            _game.StateMachine.Enter<BootstrapState>();
+            _game = new Game(sceneLoader, _loaderWidget, ServiceLocator.Instance, NetworkManager.Singleton, this);
+            _game.GameStateMachine.Enter<BootstrapState>();
 
             DontDestroyOnLoad(this);
         }

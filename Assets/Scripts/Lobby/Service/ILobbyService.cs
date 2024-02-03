@@ -13,5 +13,6 @@ namespace BlindCrocodile.Lobbies
         void DisconnectFromLobby();
         Task UpdateRemoteLobbyDataAsync();
         Task UpdateRemotePlayerDataAsync(string allocationId, string relayConnectionInfo);
+        LocalPlayer GetLocalPlayerByClientId(ulong clientId);
     }
 }

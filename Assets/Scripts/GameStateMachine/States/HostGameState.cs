@@ -1,9 +1,9 @@
 ﻿using BlindCrocodile.Core;
 using BlindCrocodile.Core.StateMachine;
 using BlindCrocodile.Services.LobbyFactory;
+using BlindCrocodile.Services.Factories;
+using BlindCrocodile.NetworkStates;
 using BlindCrocodile.Services.Network;
-using BlindCrocodile.Lobbies;
-using System.Threading.Tasks;
 
 namespace BlindCrocodile.GameStates
 {
@@ -13,21 +13,21 @@ namespace BlindCrocodile.GameStates
         private const string LOBBY_NAME = "GameLobby";
         private const int MAX_CONNECTIONS = 5;
 
-        private readonly IStateMachine<IGameState> _gameStateMachine;
+        private readonly AbstractStateMachine<IGameState> _gameStateMachine;
+        private readonly NetworkStateMachine _networkStateMachine;
         private readonly ILobbyFactory _lobbyFactory;
-        private readonly ILobbyService _lobbyService;
-        private readonly INetworkService _networkService;
+        private readonly INetworkFactory _networkFactory;
         private readonly SceneLoader _sceneLoader;
         private readonly LoaderWidget _loaderWidget;
 
-        public HostGameState(IStateMachine<IGameState> stateMachine, ILobbyFactory lobbyFactory, ILobbyService lobbyService, INetworkService networkService, SceneLoader sceneLoader, LoaderWidget loaderWidget)
+        public HostGameState(AbstractStateMachine<IGameState> stateMachine, ILobbyFactory lobbyFactory, INetworkFactory networkFactory, SceneLoader sceneLoader, LoaderWidget loaderWidget, NetworkStateMachine networkStateMachine)
         {
             _gameStateMachine = stateMachine;
             _lobbyFactory = lobbyFactory;
             _sceneLoader = sceneLoader;
             _loaderWidget = loaderWidget;
-            _lobbyService = lobbyService;
-            _networkService = networkService;
+            _networkFactory = networkFactory;
+            _networkStateMachine = networkStateMachine;
         }
 
         public void Enter()
@@ -39,18 +39,12 @@ namespace BlindCrocodile.GameStates
         public void Exit() =>
             _loaderWidget.Hide();
 
-        private async void OnLoaded()
+        private void OnLoaded()
         {
-            await InitLobbyHudAsync();
-            _gameStateMachine.Enter<WaitingLobbyState>();
-        }
-
-        private async Task InitLobbyHudAsync()
-        {
+            NetworkPlayersLobby networkList = _networkFactory.CreateNetworkPlayer();
             _lobbyFactory.CreateHud();
-
-            await _lobbyService.CreateLobbyAsync(LOBBY_NAME, MAX_CONNECTIONS);
-            await _networkService.StartHostAsync(MAX_CONNECTIONS);
+            _gameStateMachine.Enter<GameLoopState>();
+            _networkStateMachine.Enter<HostState, NetworkPlayersLobby>(networkList);
         }
     }
 }

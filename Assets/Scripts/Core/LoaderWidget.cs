@@ -20,19 +20,6 @@ namespace BlindCrocodile.Core
 
         public void Hide() =>
             StartCoroutine(FadeIn());
-                
-        private IEnumerator FadeOut()
-        {
-            float fadeStep = Time.fixedDeltaTime / _timeToFade;
-
-            while (_canvas.alpha > 0f)
-            {
-                _canvas.alpha -= fadeStep;
-                yield return new WaitForSeconds(Time.fixedDeltaTime);
-            }
-
-            gameObject.SetActive(false);
-        }
 
         private IEnumerator FadeIn()
         {

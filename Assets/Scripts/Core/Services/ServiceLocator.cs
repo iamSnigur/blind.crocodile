@@ -8,7 +8,7 @@ namespace BlindCrocodile.Core.Services
         public static ServiceLocator Instance => _instance ??= new ServiceLocator();
 
         private static ServiceLocator _instance;
-        private static Dictionary<Type, IService> _services = new();
+        private static readonly Dictionary<Type, IService> _services = new();
 
         private ServiceLocator() { }
 

@@ -1,6 +1,7 @@
 ﻿using BlindCrocodile.Core.StateMachine;
 using BlindCrocodile.GameStates;
 using BlindCrocodile.Lobbies;
+using BlindCrocodile.Services.Factories;
 using BlindCrocodile.Services.Network;
 using BlindCrocodile.Services.StaticData;
 using BlindCrocodile.UI;
@@ -10,17 +11,19 @@ namespace BlindCrocodile.Services.LobbyFactory
 {
     public class LobbyFactory : ILobbyFactory
     {
+        private readonly AbstractStateMachine<IGameState> _stateMachine;
         private readonly INetworkService _networkService;
         private readonly IStaticDataService _staticDataService;
-        private readonly IStateMachine<IGameState> _stateMachine;
         private readonly ILobbyService _lobbyService;
+        private readonly INetworkFactory _networkFactory;
 
-        public LobbyFactory(INetworkService networkService, IStaticDataService staticDataService, IStateMachine<IGameState> stateMachine, ILobbyService lobbyService)
+        public LobbyFactory(INetworkService networkService, IStaticDataService staticDataService, AbstractStateMachine<IGameState> stateMachine, ILobbyService lobbyService, INetworkFactory networkFactory)
         {
             _networkService = networkService;
             _staticDataService = staticDataService;
             _stateMachine = stateMachine;
             _lobbyService = lobbyService;
+            _networkFactory = networkFactory;
         }
 
         public GameObject CreateHud()
@@ -28,7 +31,7 @@ namespace BlindCrocodile.Services.LobbyFactory
             GameObject hud = Object.Instantiate(_staticDataService.UIStaticData.LobbyHudPrefab);
             hud
                 .GetComponent<LobbyHudController>()
-                .Construct(_networkService, _stateMachine, _lobbyService, this);
+                .Construct(_networkService, _stateMachine, _lobbyService, this, _networkFactory);
 
             return hud;
         }

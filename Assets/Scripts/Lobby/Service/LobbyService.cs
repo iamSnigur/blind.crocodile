@@ -1,31 +1,33 @@
 ﻿using BlindCrocodile.Core;
+using BlindCrocodile.Core.StateMachine;
+using BlindCrocodile.GameStates;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using IUnityLobbyService = Unity.Services.Lobbies.ILobbyService;
 using Unity.Services.Authentication;
-using BlindCrocodile.Core.StateMachine;
-using BlindCrocodile.GameStates;
+using IUnityLobbyService = Unity.Services.Lobbies.ILobbyService;
 
 namespace BlindCrocodile.Lobbies
 {
     public class LobbyService : ILobbyService
     {
+        private const float HEARTBEAT_DELAY = 10f;
+
         public LocalLobby LocalLobby { get; private set; }
         public LocalPlayer LocalPlayer { get; private set; }
 
         private readonly IUnityLobbyService _unityLobbyService;
         private readonly ICoroutineRunner _coroutineRunner;
-        private readonly IStateMachine<IGameState> _gameStateMachine;
+        private readonly AbstractStateMachine<IGameState> _gameStateMachine;
 
         private Lobby _remoteLobby;
         private ILobbyEvents _lobbyEvents;
         private Coroutine _hearbeatCoroutine;
 
-        public LobbyService(IUnityLobbyService unityLobbyService, ICoroutineRunner coroutineRunner, IStateMachine<IGameState> gameStateMachine)
+        public LobbyService(IUnityLobbyService unityLobbyService, ICoroutineRunner coroutineRunner, AbstractStateMachine<IGameState> gameStateMachine)
         {
             _unityLobbyService = unityLobbyService;
             _coroutineRunner = coroutineRunner;
@@ -50,13 +52,14 @@ namespace BlindCrocodile.Lobbies
                 _remoteLobby = await _unityLobbyService.CreateLobbyAsync(lobbyName, maxConnections, options);
 
                 LocalLobby.SetRemoteData(_remoteLobby);
-                _hearbeatCoroutine = _coroutineRunner.StartCoroutine(HeartbeatCoroutine(10f));
+                _hearbeatCoroutine = _coroutineRunner.StartCoroutine(HeartbeatCoroutine(HEARTBEAT_DELAY));
                 SubscribeToLobbyEvents();
             }
             catch (LobbyServiceException e)
             {
                 Debug.LogError(e);
                 _gameStateMachine.Enter<LoadMenuState>();
+                throw;
             }
         }
 
@@ -138,6 +141,15 @@ namespace BlindCrocodile.Lobbies
             }
         }
 
+        public LocalPlayer GetLocalPlayerByClientId(ulong clientId)
+        {
+            foreach (LocalPlayer player in LocalLobby.Players.Values)
+                if (clientId == player.NetworkId)
+                    return player;
+
+            return null;
+        }
+
         private async void SubscribeToLobbyEvents()
         {
             LobbyEventCallbacks callbacks = new();
@@ -153,8 +165,8 @@ namespace BlindCrocodile.Lobbies
         {
             if (changes.LobbyDeleted)
             {
-                ResetLobby();
                 DisconnectFromLobby();
+                ResetLobby();
                 _gameStateMachine.Enter<LoadMenuState>();
 
                 return;

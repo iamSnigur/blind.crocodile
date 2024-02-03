@@ -1,13 +1,14 @@
-﻿using BlindCrocodile.Core;
-using BlindCrocodile.Core.StateMachine;
+﻿using BlindCrocodile.Core.StateMachine;
 using BlindCrocodile.GameStates;
 using BlindCrocodile.Lobbies;
+using BlindCrocodile.Services.Factories;
 using BlindCrocodile.Services.LobbyFactory;
 using BlindCrocodile.Services.Network;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using NetworkPlayer = BlindCrocodile.Services.Network.NetworkPlayer;
 
 namespace BlindCrocodile.UI
 {
@@ -16,23 +17,36 @@ namespace BlindCrocodile.UI
         [SerializeField] private TextMeshProUGUI _playersCountLabel;
         [SerializeField] private TextMeshProUGUI _joinCodeLabel;
         [SerializeField] private Button _exitButton;
-        [SerializeField] private Button _readyButton; // if client
+        [SerializeField] private Button _readyButton;
+        [SerializeField] private TextMeshProUGUI _readyButtonLabel;
         [SerializeField] private Transform _playerHudItemsContainer;
+        [SerializeField] private Color _readyColor;
+        [SerializeField] private Color _notReadyColor;
 
         private readonly Dictionary<string, PlayerHudItem> _playerHudItems = new();
+        private AbstractStateMachine<IGameState> _gameStateMachine;
         private INetworkService _networkService;
-        private IStateMachine<IGameState> _gameStateMachine;
         private ILobbyService _lobbyService;
         private ILobbyFactory _lobbyFactory;
+        private INetworkFactory _networkFactory;
 
-        public void Construct(INetworkService networkService, IStateMachine<IGameState> gameStateMachine, ILobbyService lobbyService, ILobbyFactory lobbyFactory)
+        public void Construct(INetworkService networkService, AbstractStateMachine<IGameState> gameStateMachine, ILobbyService lobbyService, ILobbyFactory lobbyFactory, INetworkFactory networkFactory)
         {
             _networkService = networkService;
             _gameStateMachine = gameStateMachine;
             _lobbyService = lobbyService;
             _lobbyFactory = lobbyFactory;
+            _networkFactory = networkFactory;
             _exitButton.onClick.AddListener(Exit);
+            _readyButton.onClick.AddListener(Ready);
             _lobbyService.LocalLobby.OnChanged += OnLocalLobbyChanged;
+            _networkFactory.NetworkPlayerView.OnPlayerListChanged += OnPlayerListChanged;
+        }
+
+        private void OnPlayerListChanged(string lobbyId, NetworkPlayer networkPlayer)
+        {
+            if (_playerHudItems.ContainsKey(lobbyId))
+                _playerHudItems[lobbyId].Construct(networkPlayer);
         }
 
         private void OnDestroy() =>
@@ -42,6 +56,14 @@ namespace BlindCrocodile.UI
         {
             _networkService.Disconnect();
             _gameStateMachine.Enter<LoadMenuState>();
+        }
+
+        private void Ready()
+        {
+            if (_networkService.IsServer)
+                _networkFactory.NetworkPlayerView.StartGame();
+            else
+                _networkFactory.NetworkPlayerView.ToggleReady();
         }
 
         private void OnLocalLobbyChanged(LocalLobby lobby)

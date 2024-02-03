@@ -15,5 +15,10 @@ namespace BlindCrocodile.UI
             _nameLabel.text = localPlayer.Name;
             _hostMark.SetActive(localPlayer.IsHost);
         }
+
+        public void Construct(Services.Network.NetworkPlayer localPlayer)
+        {
+            _readyMark.SetActive(localPlayer.IsReady);
+        }
     }
 }

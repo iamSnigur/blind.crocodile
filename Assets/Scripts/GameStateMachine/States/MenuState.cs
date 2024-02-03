@@ -4,9 +4,9 @@ namespace BlindCrocodile.GameStates
 {
     public class MenuState : IGameState, IState
     {
-        private readonly IStateMachine<IGameState> _stateMachine;
+        private readonly AbstractStateMachine<IGameState> _stateMachine;
 
-        public MenuState(IStateMachine<IGameState> stateMachine)
+        public MenuState(AbstractStateMachine<IGameState> stateMachine)
         {
             _stateMachine = stateMachine;
         }

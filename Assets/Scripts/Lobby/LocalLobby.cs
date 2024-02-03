@@ -153,17 +153,21 @@ namespace BlindCrocodile.Lobbies
                 }
 
                 string name = "Player";
+                ulong networkId = 0;
 
                 if (remote.Data != null)
+                {
                     name = remote.Data.TryGetValue("DisplayName", out PlayerDataObject nameObject)
                         ? nameObject.Value
                         : "Player";
+                }
 
                 LocalPlayer newLocal = new()
                 {
+                    NetworkId = networkId,
                     Id = remote.Id,
                     Name = name,
-                    IsHost = HostId.Equals(remote.Id)
+                    IsHost = HostId.Equals(remote.Id),
                 };
 
                 playersFromRemote.Add(newLocal);

@@ -4,6 +4,7 @@ using TMPro;
 using BlindCrocodile.Lobbies;
 using BlindCrocodile.GameStates;
 using BlindCrocodile.Core.StateMachine;
+using BlindCrocodile.NetworkStates;
 
 namespace BlindCrocodile.UI
 {
@@ -15,17 +16,21 @@ namespace BlindCrocodile.UI
         [SerializeField] private Button _hostButton;
         [SerializeField] private Button _exitButton;
 
-        private IStateMachine<IGameState> _gameStateMachine;
+        private AbstractStateMachine<IGameState> _gameStateMachine;
+        private NetworkStateMachine _networkStateMachine;
         private ILobbyService _lobbyService;
 
-        public void Construct(IStateMachine<IGameState> gameStateMachine, ILobbyService lobbyService)
+        public void Construct(AbstractStateMachine<IGameState> gameStateMachine, ILobbyService lobbyService, NetworkStateMachine networkStateMachine)
         {
             _gameStateMachine = gameStateMachine;
             _lobbyService = lobbyService;
+            _networkStateMachine = networkStateMachine;
 
             _joinButton.onClick.AddListener(JoinGame);
             _hostButton.onClick.AddListener(HostGame);
             _exitButton.onClick.AddListener(Exit);
+
+            _playerNameInput.text = _lobbyService.LocalPlayer.Name;
         }
 
         private void HostGame()
@@ -34,7 +39,8 @@ namespace BlindCrocodile.UI
                 return;
 
             UpdateLocalPlayer(isHost: true);
-            _gameStateMachine.Enter<HostGameState>();
+            _gameStateMachine.Enter<HostGameState>(); // enter load scene state
+            //_networkStateMachine.Enter<HostState, int>(5);
         }
 
         private void JoinGame()
@@ -44,9 +50,11 @@ namespace BlindCrocodile.UI
                 return;
 
             UpdateLocalPlayer();
-            _gameStateMachine.Enter<JoinGameState, string>(_joinCodeInput.text);
+            _gameStateMachine.Enter<JoinGameState, string>(_joinCodeInput.text); // same here
+            //_networkStateMachine.Enter<JoinState, string>(_joinCodeInput.text);
         }
 
+        // TODO refactor
         private void Exit() =>
             Application.Quit();
 

@@ -8,12 +8,12 @@ namespace BlindCrocodile.GameStates
     {
         private const string MENU_SCENE = "LobbyScene";
 
-        private readonly IStateMachine<IGameState> _stateMachine;
+        private readonly AbstractStateMachine<IGameState> _stateMachine;
         private readonly IMenuFactory _menuFactory;
         private readonly SceneLoader _sceneLoader;
         private readonly LoaderWidget _loaderWidget;
 
-        public LoadMenuState(IStateMachine<IGameState> stateMachine, IMenuFactory lobbyFactory, SceneLoader sceneLoader, LoaderWidget loaderWidget)
+        public LoadMenuState(AbstractStateMachine<IGameState> stateMachine, IMenuFactory lobbyFactory, SceneLoader sceneLoader, LoaderWidget loaderWidget)
         {
             _stateMachine = stateMachine;
             _menuFactory = lobbyFactory;
