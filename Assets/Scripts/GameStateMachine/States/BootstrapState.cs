@@ -18,11 +18,11 @@ namespace BlindCrocodile.GameStates
     public class BootstrapState : IGameState, IState
     {
         private readonly ServiceLocator _services;
-        private readonly AbstractStateMachine<IGameState> _gameStateMachine;
+        private readonly GameStateMachine _gameStateMachine;
         private readonly NetworkStateMachine _networkStateMachine;
         private readonly ICoroutineRunner _coroutineRunner;
 
-        public BootstrapState(AbstractStateMachine<IGameState> gameStateMachine, ServiceLocator services, ICoroutineRunner coroutineRunner, NetworkStateMachine networkStateMachine)
+        public BootstrapState(GameStateMachine gameStateMachine, ServiceLocator services, ICoroutineRunner coroutineRunner, NetworkStateMachine networkStateMachine)
         {
             _gameStateMachine = gameStateMachine;
             _networkStateMachine = networkStateMachine;
@@ -34,7 +34,7 @@ namespace BlindCrocodile.GameStates
         public void Enter()
         {
             QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = 143;
+            Application.targetFrameRate = 240;
             _gameStateMachine.Enter<LoadMenuState>();
         }
 

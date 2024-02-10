@@ -1,5 +1,4 @@
-﻿using BlindCrocodile.Core.StateMachine;
-using BlindCrocodile.GameStates;
+﻿using BlindCrocodile.GameStates;
 using BlindCrocodile.Lobbies;
 using BlindCrocodile.Services.Factories;
 using BlindCrocodile.Services.Network;
@@ -11,13 +10,13 @@ namespace BlindCrocodile.Services.LobbyFactory
 {
     public class LobbyFactory : ILobbyFactory
     {
-        private readonly AbstractStateMachine<IGameState> _stateMachine;
+        private readonly GameStateMachine _stateMachine;
         private readonly INetworkService _networkService;
         private readonly IStaticDataService _staticDataService;
         private readonly ILobbyService _lobbyService;
         private readonly INetworkFactory _networkFactory;
 
-        public LobbyFactory(INetworkService networkService, IStaticDataService staticDataService, AbstractStateMachine<IGameState> stateMachine, ILobbyService lobbyService, INetworkFactory networkFactory)
+        public LobbyFactory(INetworkService networkService, IStaticDataService staticDataService, GameStateMachine stateMachine, ILobbyService lobbyService, INetworkFactory networkFactory)
         {
             _networkService = networkService;
             _staticDataService = staticDataService;

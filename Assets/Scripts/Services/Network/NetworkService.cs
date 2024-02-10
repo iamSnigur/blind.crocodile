@@ -10,7 +10,6 @@ using System.Text;
 
 namespace BlindCrocodile.Services.Network
 {
-    // Create network state machine to controll network states of player
     public class NetworkService : INetworkService
     {
         private const string DTLS_CONNECTION = "dtls";

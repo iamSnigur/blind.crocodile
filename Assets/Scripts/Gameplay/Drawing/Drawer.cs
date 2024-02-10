@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace BlindCrocodile.Gameplay.Drawing
@@ -10,26 +11,19 @@ namespace BlindCrocodile.Gameplay.Drawing
         private static readonly int _BrushSizeID = Shader.PropertyToID("_BrushSize");
 
         [SerializeField] private RectTransform _rectTransform;
-        [SerializeField] private Shader _paintShader;
+        [SerializeField] private Material _paintMaterial;
         [SerializeField] private RawImage _canvas;
         [SerializeField] private Color _color;
         [Range(5f, 25f)][SerializeField] private float _brushSize = 15f;
-        [SerializeField] private Image _texture2D;
-        [SerializeField] RenderTexture or;
-        //[SerializeField] private ComparisonVisualizer _comparisonVisualizer;
 
         private Vector2 _previousMousePos;
-        private Material _paintMaterial;
         private Vector2 _canvasSize;
         private RenderTexture _tmpRT;
         private RenderTexture _canvasRT;
 
-        private Texture2D _tmpCanvas;
-
         private void Start()
         {
             _canvasSize = _rectTransform.sizeDelta;
-            _paintMaterial = new Material(_paintShader);
 
             _canvasRT = RenderTexture.GetTemporary((int)_canvasSize.x, (int)_canvasSize.y);
             _canvasRT.filterMode = FilterMode.Point;
@@ -37,7 +31,6 @@ namespace BlindCrocodile.Gameplay.Drawing
             _tmpRT = RenderTexture.GetTemporary(_canvasRT.descriptor);
 
             _canvas.texture = _canvasRT;
-            _tmpCanvas = new Texture2D((int)_canvasSize.x, (int)_canvasSize.y);
         }
 
         private void Update()
@@ -62,6 +55,30 @@ namespace BlindCrocodile.Gameplay.Drawing
             _previousMousePos = currentMouse;
         }
 
+        public byte[] GetCanvasBytes()
+        {
+            Texture2D texture2D = new((int)_canvasSize.x, (int)_canvasSize.y);
+
+            RenderTexture.active = _canvasRT;
+            texture2D.ReadPixels(new Rect(Vector2.zero, _canvasSize), 0, 0);
+            texture2D.Apply();
+
+            byte[] png = texture2D.EncodeToPNG();
+            Debug.Log($"Texture length: {png.Length}");
+            Destroy(texture2D);
+
+            return png;
+        }
+
+        public void CreateFromBytes(byte[] textureBytes)
+        {            
+            Texture2D texture = new((int)_canvasSize.x, (int)_canvasSize.y);
+            texture.LoadImage(textureBytes);
+            texture.Apply();
+            Graphics.Blit(texture, _canvasRT);
+            Destroy(texture);
+        }
+
         private void PaintCanvas(Vector2 mousePos)
         {
             float distance = Vector2.Distance(mousePos, _previousMousePos);
@@ -76,4 +93,10 @@ namespace BlindCrocodile.Gameplay.Drawing
             }
         }
     }
+
+    // paint material 
+
+
+    // service for drawing - set brush and paint position
+    // drawing UI controller - change brush size and color | support more features like: bucket, lines ext.
 }

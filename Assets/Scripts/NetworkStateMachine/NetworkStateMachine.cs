@@ -102,8 +102,6 @@ namespace BlindCrocodile.NetworkStates
 
         private void OnClientConnected(ulong clientId)
         {
-            // add player into network list
-            Debug.Log("client connected " + clientId);
             string lobbyId = SessionData.ConnectedPlayerIds[clientId];
             Debug.Log("client lobby id: " + lobbyId);
 
@@ -113,7 +111,8 @@ namespace BlindCrocodile.NetworkStates
                     _lobbyService.LocalLobby.Players[lobbyId].Name,
                     lobbyId,
                     _lobbyService.LocalLobby.Players[lobbyId].IsHost,
-                    PlayerRole.Guesser));
+                    PlayerRole.Guesser,
+                    Array.Empty<byte>().ToBytesContainer()));
         }
     }
 
