@@ -1,4 +1,4 @@
-Shader "Unlit/ComparisonShader"
+Shader "Hidden/ComparisonShader"
 {
     Properties
     {
@@ -32,6 +32,22 @@ Shader "Unlit/ComparisonShader"
             sampler2D _MainTex;
             sampler2D _originalTex;
 
+            // 0                  0.5                1    
+            // rgb(253, 231, 37), rgb(33, 145, 140), rgb(68, 1, 84) | viridis
+
+            static float4 _lowColor = float4(5, 235, 89, 255) / float4(255, 255, 255, 255);
+            static float4 _midColor = float4(239, 238, 92, 255) / float4(255, 255, 255, 255);
+            static float4 _hightColor = float4(252, 78, 77, 255) / float4(255, 255, 255, 255);
+
+            fixed4 ToHeatmap(float diff)
+            {
+                diff = clamp(diff, 0, 1);
+
+                return diff < 0.5
+                    ? lerp(_lowColor, _midColor, diff * 2.0)
+                    : lerp(_midColor, _hightColor, (diff - 0.5) * 2.0);
+            }
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -45,17 +61,12 @@ Shader "Unlit/ComparisonShader"
                 fixed4 oc = tex2D(_originalTex, i.uv);
                 fixed4 rc = tex2D(_MainTex, i.uv);
 
-                if (rc.a == 0.0)
+                if (oc.a == 0.0 || rc.a == 0.0)
                     discard;
+
+                float diff = length(rc.rgb - oc.rgb);
                 
-                return oc == rc 
-                    ? fixed4(1.0, 0.0, 0.0, 1.0)
-                    : fixed4(0.0, 0.0, 1.0, 1.0);
-
-                float normalized = sqrt(pow(oc.r - rc.r, 2) + pow(oc.g - rc.g, 2) + pow(oc.b - rc.b, 2));
-                float normalized_ds = normalized / sqrt(3.0);
-
-                return lerp(fixed4(1.0, 0.0, 0.0, 1.0), fixed4(0.0, 0.0, 1.0, 1.0), normalized_ds);
+                return ToHeatmap(diff);               
             }
             ENDCG
         }

@@ -25,20 +25,26 @@ namespace BlindCrocodile.Services.LobbyFactory
             _networkFactory = networkFactory;
         }
 
-        public GameObject CreateHud()
+        public ColorStatItem CreateColorStatItem(Color color, float amount, Transform parent)
         {
-            GameObject hud = Object.Instantiate(_staticDataService.UIStaticData.LobbyHudPrefab);
-            hud
-                .GetComponent<LobbyHudController>()
-                .Construct(_networkService, _stateMachine, _lobbyService, this, _networkFactory);
+            ColorStatItem statItem = Object.Instantiate(_staticDataService.UIStaticData.ColorStatItemPrefab, parent);
+            statItem.Construct(color, amount);
+
+            return statItem;
+        }
+
+        public LobbyHudController CreateHud()
+        {
+            LobbyHudController hud = Object.Instantiate(_staticDataService.UIStaticData.LobbyHudPrefab);
+
+            hud.Construct(_networkService, _stateMachine, _lobbyService, this, _networkFactory);
 
             return hud;
         }
 
         public PlayerHudItem CreatePlayerItem(LocalPlayer localPlayer, Transform parent)
         {
-            PlayerHudItem playerItem = 
-                Object.Instantiate(_staticDataService.UIStaticData.PlayerHudItemPrefab, parent);
+            PlayerHudItem playerItem = Object.Instantiate(_staticDataService.UIStaticData.PlayerHudItemPrefab, parent);
             playerItem.Construct(localPlayer);
 
             return playerItem;

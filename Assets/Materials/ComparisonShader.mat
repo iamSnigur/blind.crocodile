@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ImageScrollMaterial
-  m_Shader: {fileID: 4800000, guid: a1f3bc6e9cd99774085018ca6c4d05cb, type: 3}
+  m_Name: ComparisonShader
+  m_Shader: {fileID: 4800000, guid: 9e41b63e8d9927649a4f362239e613f6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -28,7 +28,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats:
-    - _ScrollSpeed: 0.02
+    m_Floats: []
     m_Colors: []
   m_BuildTextureStacks: []

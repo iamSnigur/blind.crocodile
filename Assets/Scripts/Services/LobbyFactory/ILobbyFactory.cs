@@ -7,7 +7,8 @@ namespace BlindCrocodile.Services.LobbyFactory
 {
     public interface ILobbyFactory : IService
     {
-        GameObject CreateHud();
+        LobbyHudController CreateHud();
         PlayerHudItem CreatePlayerItem(LocalPlayer localPlayer, Transform parent);
+        ColorStatItem CreateColorStatItem(Color color, float amount, Transform parent);
     }
 }

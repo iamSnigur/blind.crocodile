@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BlindCrocodile.Services.Network
 {
@@ -54,7 +55,6 @@ namespace BlindCrocodile.Services.Network
             UpdatePlayerReadyServerRpc(NetworkManager.LocalClientId, _localPlayer.IsReady);
         }
 
-        // update player list for new players // call from server
         public void StartGame()
         {
             for (int i = 0; i < Players.Count; i++)
@@ -71,13 +71,13 @@ namespace BlindCrocodile.Services.Network
             }
 
             // reset roles : for test
-            for (int i = 0; i < Players.Count; i++)
-                Players[i] = Players[i].SetRole(PlayerRole.Guesser);
+            //for (int i = 0; i < Players.Count; i++)
+            //    Players[i] = Players[i].SetRole(PlayerRole.Guesser);
 
             int artistIndex = UnityEngine.Random.Range(0, Players.Count);
-            Players[artistIndex] = Players[artistIndex].SetRole(PlayerRole.Artist);
-
-            NotifyGameStartClientRpc();            
+            Debug.Log("Artist index: " + artistIndex);
+            
+            NotifyGameStartClientRpc(Players[artistIndex].Id);            
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -115,23 +115,21 @@ namespace BlindCrocodile.Services.Network
         }
 
         [ClientRpc]
-        public void NotifyGameStartClientRpc()
+        public void NotifyGameStartClientRpc(ulong artistId)
         {
             // use gameplay state machine to change to PreRound state
             NetworkPlayer networkPlayer = GetLocalPlayer();
-            string color = networkPlayer.Role == PlayerRole.Artist
-                ? "green"
-                : "red";
+            PlayerRole playerRole = artistId == networkPlayer.Id
+                ? PlayerRole.Artist
+                : PlayerRole.Guesser;
 
-            Debug.Log($"<color={color}>{networkPlayer.Role}</color>");
-
-            // invoke on game started
-            OnGameStarted?.Invoke(networkPlayer.Role);
+            OnGameStarted?.Invoke(playerRole);
         }
 
         private void OnListChanged(NetworkListEvent<NetworkPlayer> changeEvent)
         {
             Debug.Log($"<b>Lobby id of the client {changeEvent.Value.Name}: {changeEvent.Value.LobbyId}</b>");
+            Debug.LogError("List changed " + changeEvent.Value.Name);
             OnPlayerListChanged?.Invoke(Players);
         }
 

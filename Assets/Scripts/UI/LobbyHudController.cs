@@ -4,7 +4,6 @@ using BlindCrocodile.Lobbies;
 using BlindCrocodile.Services.Factories;
 using BlindCrocodile.Services.LobbyFactory;
 using BlindCrocodile.Services.Network;
-using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -24,12 +23,12 @@ namespace BlindCrocodile.UI
         [SerializeField] private Transform _playerHudItemsContainer;
         [SerializeField] private Color _readyColor;
         [SerializeField] private Color _notReadyColor;
-        [SerializeField] private GameObject _lobbyModal; // create separe controllers for artist and guesser
+        [SerializeField] private GameObject _lobbyModal;
         [SerializeField] private GameObject _artistModal;
         [SerializeField] private GameObject _guesserModal;
-        [SerializeField] private Drawer _artistDrawer;
-        [SerializeField] private Drawer _guesserDrawer;
-        [SerializeField] private Button _artistShareButton;
+        [SerializeField] private GuesserHudController _guesserHudController;
+        [SerializeField] private ArtistHudController _artistHudController;
+        [SerializeField] private GameObject _uiBlocker;
 
         private readonly Dictionary<string, PlayerHudItem> _playerHudItems = new();
         private GameStateMachine _gameStateMachine;
@@ -47,7 +46,7 @@ namespace BlindCrocodile.UI
             _networkFactory = networkFactory;
             _exitButton.onClick.AddListener(Exit);
             _readyButton.onClick.AddListener(Ready);
-            _artistShareButton.onClick.AddListener(ShareArtistCanvas);
+            _artistHudController.OnCanvasShared += OnCanvasShared;
             _lobbyService.LocalLobby.OnChanged += OnLocalLobbyChanged;
 
             _lobbyModal.SetActive(true);
@@ -59,14 +58,13 @@ namespace BlindCrocodile.UI
             _networkFactory.NetworkPlayerView.OnArtistSharedCanvas += OnArtistSharedCanvas;
         }
 
-        private void OnArtistSharedCanvas(byte[] canvasBytes)
-        {
-            _guesserDrawer.CreateFromBytes(canvasBytes);
-        }
+        private void OnCanvasShared(byte[] canvasBytes) => // when artist share his canvas
+            _networkFactory.NetworkPlayerView.ShareCanvas(canvasBytes);
 
-        private void ShareArtistCanvas()
+        private void OnArtistSharedCanvas(byte[] canvasBytes) // when guesser recieved shared canvas from an artist
         {
-            _networkFactory.NetworkPlayerView.ShareCanvas(_artistDrawer.GetCanvasBytes());
+            _guesserHudController.Construct(_lobbyFactory, canvasBytes);
+            _uiBlocker.SetActive(false);
         }
 
         private void OnPlayerListChanged(NetworkList<NetworkPlayer> networkPlayers)
@@ -82,17 +80,17 @@ namespace BlindCrocodile.UI
 
         private void OnGameStarted(PlayerRole playerRole)
         {
-            // toggle UI depend on role
-
             _lobbyModal.SetActive(false);
 
             switch (playerRole)
             {
                 case PlayerRole.Artist:
+                    _networkFactory.NetworkPlayerView.OnArtistSharedCanvas -= OnArtistSharedCanvas;
                     _artistModal.SetActive(true);
                     break;
-                case PlayerRole.Guesser: 
-                    _guesserModal.SetActive(true); 
+                case PlayerRole.Guesser:
+                    _uiBlocker.SetActive(true);
+                    _guesserModal.SetActive(true);
                     break;
             }
         }
@@ -102,6 +100,7 @@ namespace BlindCrocodile.UI
             _lobbyService.LocalLobby.OnChanged -= OnLocalLobbyChanged;
             _networkFactory.NetworkPlayerView.OnPlayerListChanged -= OnPlayerListChanged;
             _networkFactory.NetworkPlayerView.OnGameStarted -= OnGameStarted;
+            _networkFactory.NetworkPlayerView.OnArtistSharedCanvas -= OnArtistSharedCanvas;
         }
 
         private void Exit()

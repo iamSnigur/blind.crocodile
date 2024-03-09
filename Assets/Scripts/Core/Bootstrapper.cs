@@ -18,8 +18,8 @@ namespace BlindCrocodile.Core
         {
             await InitializeUnityServices();
 
-            var sceneLoader = new SceneLoader(this);
-            _game = new Game(sceneLoader, _loaderWidget, ServiceLocator.Instance, NetworkManager.Singleton, this);
+            SceneLoader sceneLoader = new(coroutineRunner: this);
+            _game = new Game(sceneLoader, _loaderWidget, ServiceLocator.Instance, NetworkManager.Singleton, coroutineRunner: this);
             _game.GameStateMachine.Enter<BootstrapState>();
 
             DontDestroyOnLoad(this);

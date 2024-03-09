@@ -7,7 +7,8 @@ namespace BlindCrocodile.StaticData
     public class UIStaticData : ScriptableObject
     {
         public GameObject MenuHudPrefab;
-        public GameObject LobbyHudPrefab;
+        public LobbyHudController LobbyHudPrefab;
         public PlayerHudItem PlayerHudItemPrefab;
+        public ColorStatItem ColorStatItemPrefab;
     }
 }

@@ -62,7 +62,7 @@ namespace BlindCrocodile.GameStates
 
         private void BindStaticDataService()
         {
-            var staticDataService = new StaticDataService();
+            StaticDataService staticDataService = new();
             staticDataService.Load();
             _services.BindSingle<IStaticDataService>(staticDataService);
         }
